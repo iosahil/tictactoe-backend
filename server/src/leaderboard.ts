@@ -244,7 +244,7 @@ function rpcGetLeaderboard(
         try {
             if (r.ownerId) {
                 const account = nk.accountGetId(r.ownerId);
-                avatarId = normalizeAvatarId(account.user?.metadata);
+                avatarId = avatarIdFromMetadata(account.user?.metadata);
             }
         } catch (e) {
             logger.debug("Leaderboard metadata lookup failed for user=%s", r.ownerId);

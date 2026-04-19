@@ -1,10 +1,6 @@
-# TicTacToe Multiplayer (Android + Nakama)
+# TicTacToe Multiplayer
 
-Single combined README for both projects:
-- Android client
-- Nakama multiplayer backend
-
-## App Screenshot Space
+## Demo
 - Screenshot 1:
 - Screenshot 2:
 - Screenshot 3:
@@ -14,15 +10,17 @@ Single combined README for both projects:
 - Deployed and accessible game URL / mobile application:
 - Deployed Nakama server endpoint:
 
+
+
+## Project Layout
+| Project        | Repository                                         | Purpose                                                 |
+|----------------|----------------------------------------------------|---------------------------------------------------------|
+| Android app    | Link - https://github.com/iosahil/TicTacToe/       | UI, navigation, auth, realtime gameplay client          |
+| Nakama backend | Link - http://github.com/iosahil/tictactoe-backend | Matchmaking, room flow, game loop, leaderboard, history |
+
 ## Azure Architecture Reference
 - Architecture implemented on Azure.
 - Reference image:
-
-## Project Layout
-| Project | Path | Purpose |
-|---|---|---|
-| Android app | `c:/Users/sahil/AndroidStudioProjects/TicTacToe` | UI, navigation, auth, realtime gameplay client |
-| Nakama backend | `c:/nakama` | Matchmaking, room flow, game loop, leaderboard, history |
 
 ## Setup and Installation
 ### 1) Nakama backend

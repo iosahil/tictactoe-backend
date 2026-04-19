@@ -1,11 +1,11 @@
 param(
-    [string]$ResourceGroup = "NetworkWatcherRG",
-    [string]$Location = "eastus",
-    [string]$ContainerApp = "tictactoedemo",
-    [string]$ContainerAppEnv = "cae-tictactoedemo",
-    [string]$AcrName = "tictactoedemo",
-    [string]$AcrLoginServer = "tictactoedemo.azurecr.io",
-    [string]$ImageRepository = "nakama-server",
+    [string]$ResourceGroup = "",
+    [string]$Location = "",
+    [string]$ContainerApp = "",
+    [string]$ContainerAppEnv = "",
+    [string]$AcrName = "",
+    [string]$AcrLoginServer = "",
+    [string]$ImageRepository = "",
     [string]$ImageTag = "",
     [string]$DbAddress = "",
     [string]$NakamaServerKey = "",
@@ -34,6 +34,66 @@ function Test-CommandAvailable {
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
         throw "Required command '$Name' not found in PATH."
     }
+}
+
+function Import-DotEnv {
+    param([string]$Path)
+
+    $values = @{}
+    if (-not (Test-Path $Path)) {
+        return $values
+    }
+
+    foreach ($rawLine in Get-Content -Path $Path) {
+        $line = $rawLine.Trim()
+        if (-not $line -or $line.StartsWith("#")) {
+            continue
+        }
+
+        $separatorIndex = $line.IndexOf("=")
+        if ($separatorIndex -lt 1) {
+            continue
+        }
+
+        $name = $line.Substring(0, $separatorIndex).Trim()
+        $value = $line.Substring($separatorIndex + 1).Trim()
+
+        if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+            $value = $value.Substring(1, $value.Length - 2)
+        }
+
+        $values[$name] = $value
+    }
+
+    return $values
+}
+
+function Resolve-StringSetting {
+    param(
+        [string]$Name,
+        [string]$CurrentValue,
+        [string]$EnvName,
+        [string]$Fallback,
+        [hashtable]$DotEnv,
+        [hashtable]$BoundParameters
+    )
+
+    if ($BoundParameters.ContainsKey($Name) -and -not [string]::IsNullOrWhiteSpace($CurrentValue)) {
+        return $CurrentValue
+    }
+
+    if ($DotEnv.ContainsKey($EnvName)) {
+        $envValue = [string]$DotEnv[$EnvName]
+        if (-not [string]::IsNullOrWhiteSpace($envValue)) {
+            return $envValue
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($CurrentValue)) {
+        return $CurrentValue
+    }
+
+    return $Fallback
 }
 
 function Get-LatestContainerAppRevision {
@@ -80,6 +140,35 @@ Test-CommandAvailable -Name "docker"
 Test-CommandAvailable -Name "npm"
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$dotenvPath = Join-Path $repoRoot ".env"
+$dotenv = Import-DotEnv -Path $dotenvPath
+
+$ResourceGroup = Resolve-StringSetting -Name "ResourceGroup" -CurrentValue $ResourceGroup -EnvName "AZURE_RESOURCE_GROUP" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$Location = Resolve-StringSetting -Name "Location" -CurrentValue $Location -EnvName "AZURE_LOCATION" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$ContainerApp = Resolve-StringSetting -Name "ContainerApp" -CurrentValue $ContainerApp -EnvName "AZURE_CONTAINER_APP" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$ContainerAppEnv = Resolve-StringSetting -Name "ContainerAppEnv" -CurrentValue $ContainerAppEnv -EnvName "AZURE_CONTAINER_APP_ENV" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$AcrName = Resolve-StringSetting -Name "AcrName" -CurrentValue $AcrName -EnvName "AZURE_ACR_NAME" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$AcrLoginServer = Resolve-StringSetting -Name "AcrLoginServer" -CurrentValue $AcrLoginServer -EnvName "AZURE_ACR_LOGIN_SERVER" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$ImageRepository = Resolve-StringSetting -Name "ImageRepository" -CurrentValue $ImageRepository -EnvName "IMAGE_REPOSITORY" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$DbAddress = Resolve-StringSetting -Name "DbAddress" -CurrentValue $DbAddress -EnvName "DB_ADDRESS" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+$NakamaServerKey = Resolve-StringSetting -Name "NakamaServerKey" -CurrentValue $NakamaServerKey -EnvName "NAKAMA_SERVER_KEY" -Fallback "" -DotEnv $dotenv -BoundParameters $PSBoundParameters
+
+$requiredConfig = @(
+    @{ Name = "ResourceGroup"; Value = $ResourceGroup; Source = "AZURE_RESOURCE_GROUP" }
+    @{ Name = "Location"; Value = $Location; Source = "AZURE_LOCATION" }
+    @{ Name = "ContainerApp"; Value = $ContainerApp; Source = "AZURE_CONTAINER_APP" }
+    @{ Name = "ContainerAppEnv"; Value = $ContainerAppEnv; Source = "AZURE_CONTAINER_APP_ENV" }
+    @{ Name = "AcrName"; Value = $AcrName; Source = "AZURE_ACR_NAME" }
+    @{ Name = "AcrLoginServer"; Value = $AcrLoginServer; Source = "AZURE_ACR_LOGIN_SERVER" }
+    @{ Name = "ImageRepository"; Value = $ImageRepository; Source = "IMAGE_REPOSITORY" }
+)
+
+foreach ($entry in $requiredConfig) {
+    if ([string]::IsNullOrWhiteSpace([string]$entry.Value)) {
+        throw "Missing required setting '$($entry.Name)'. Pass -$($entry.Name) or set $($entry.Source) in $dotenvPath"
+    }
+}
+
 $serverDir = Join-Path $repoRoot "server"
 $dockerfilePath = Join-Path $repoRoot "Dockerfile"
 

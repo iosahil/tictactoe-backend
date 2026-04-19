@@ -63,36 +63,8 @@ function rpcJoinRoom(
     });
 }
 
-function rpcParseAvatarId(raw: unknown): number | null {
-    const numeric = Number(raw);
-    if (!Number.isFinite(numeric)) {
-        return null;
-    }
-    return normalizeAvatarId(Math.floor(numeric));
-}
-
-function rpcMetadataAsObject(metadata: unknown): Record<string, unknown> {
-    if (metadata && typeof metadata === "object" && !Array.isArray(metadata)) {
-        return {...metadata as Record<string, unknown>};
-    }
-
-    if (typeof metadata === "string") {
-        try {
-            const parsed = JSON.parse(metadata);
-            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-                return {...parsed as Record<string, unknown>};
-            }
-        } catch {
-            // Fallback to empty metadata on parse error
-        }
-    }
-
-    return {};
-}
-
 function rpcAvatarIdFromMetadata(metadata: unknown): number | null {
-    const obj = rpcMetadataAsObject(metadata);
-    return rpcParseAvatarId(obj.avatar_id);
+    return parseAvatarId(metadataAsObject(metadata).avatar_id);
 }
 
 function rpcSetAvatar(
@@ -106,14 +78,14 @@ function rpcSetAvatar(
     }
 
     const req = payload ? JSON.parse(payload) : {};
-    const requestedAvatarId = rpcParseAvatarId(req.avatar_id);
+    const requestedAvatarId = parseAvatarId(req.avatar_id);
     if (requestedAvatarId === null) {
         throw Error("invalid avatar_id");
     }
 
     const accountBefore = nk.accountGetId(ctx.userId);
     const displayName = accountBefore.user?.displayName || "ANON";
-    const nextMetadata = rpcMetadataAsObject(accountBefore.user?.metadata);
+    const nextMetadata = metadataAsObject(accountBefore.user?.metadata);
     nextMetadata.avatar_id = requestedAvatarId;
 
     nk.accountUpdateId(

@@ -149,7 +149,7 @@ function matchJoin(
     for (const p of presences) {
         const account = nk.accountGetId(p.userId);
         const nickname = account.user?.displayName || "ANON";
-        const avatarId = normalizeAvatarId(account.user?.metadata);
+        const avatarId = avatarIdFromMetadata(account.user?.metadata);
 
         // Assign host on first join for private rooms
         if (s.roomCode !== null && !s.hostUserId) {
