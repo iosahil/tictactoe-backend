@@ -1,0 +1,27 @@
+name: nakama1
+data_dir: /nakama/data
+
+logger:
+  level: INFO
+  stdout: true
+
+session:
+  token_expiry_sec: 604800
+  refresh_token_expiry_sec: 604800
+  single_session: false
+  single_socket: true
+  single_match: true
+
+matchmaker:
+  max_tickets: 128
+  interval_sec: 5
+  max_intervals: 6
+
+runtime:
+  js_entrypoint: build/main.js
+
+socket:
+  server_key: tictactoe_server_key
+  max_message_size_bytes: 4096
+  pong_wait_ms: 25000
+  ping_period_ms: 15000

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "amd",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "./src",
+    "outFile": "./build/main.js",
+    "ignoreDeprecations": "6.0",
+    "typeRoots": ["./node_modules"]
+  },
+  "include": [
+    "src/common.ts",
+    "src/leaderboard.ts",
+    "src/match_handler.ts",
+    "src/matchmaker.ts",
+    "src/rpc.ts",
+    "src/main.ts"
+  ],
+  "exclude": ["node_modules"]
+}

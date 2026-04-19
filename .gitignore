@@ -1,0 +1,34 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Node / TypeScript outputs
+server/node_modules/
+server/build/
+server/*.tsbuildinfo
+server/npm-debug.log*
+server/yarn-debug.log*
+server/yarn-error.log*
+server/pnpm-debug.log*
+
+# Logs and temp
+*.log
+logs/
+*.tmp
+*.pid
+
+# Optional local runtime data
+nakama/data/
