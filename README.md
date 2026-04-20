@@ -1,9 +1,16 @@
 # TicTacToe Multiplayer
 
-## Demo
-- Screenshot 1
-- Screenshot 2
-- Screenshot 3
+## Screenshots
+<p align="center">
+    <a href="https://github.com/user-attachments/assets/bfd6b505-ed2f-4322-b3f8-357ddce25dd7"><img width="220" alt="Screenshot 1" src="https://github.com/user-attachments/assets/bfd6b505-ed2f-4322-b3f8-357ddce25dd7" /></a>
+    <a href="https://github.com/user-attachments/assets/8ae710ff-d582-4b2d-b96d-63a632927adf"><img width="220" alt="Screenshot 2" src="https://github.com/user-attachments/assets/8ae710ff-d582-4b2d-b96d-63a632927adf" /></a>
+    <a href="https://github.com/user-attachments/assets/fb937bc5-300e-4c81-a61a-12e285a4a35d"><img width="220" alt="Screenshot 3" src="https://github.com/user-attachments/assets/fb937bc5-300e-4c81-a61a-12e285a4a35d" /></a>
+    <a href="https://github.com/user-attachments/assets/7511cb40-5920-45f4-9fe3-6730b2f583e2"><img width="220" alt="Screenshot 4" src="https://github.com/user-attachments/assets/7511cb40-5920-45f4-9fe3-6730b2f583e2" /></a>
+    <a href="https://github.com/user-attachments/assets/f747a598-55db-460b-8ff6-03206d48915d"><img width="220" alt="Screenshot 5" src="https://github.com/user-attachments/assets/f747a598-55db-460b-8ff6-03206d48915d" /></a>
+    <a href="https://github.com/user-attachments/assets/555fc40e-8158-4eeb-aad9-8524a2ecb175"><img width="220" alt="Screenshot 6" src="https://github.com/user-attachments/assets/555fc40e-8158-4eeb-aad9-8524a2ecb175" /></a>
+    <a href="https://github.com/user-attachments/assets/52e6f0e7-3846-4ed5-9ec9-088e69c70ea4"><img width="220" alt="Screenshot 7" src="https://github.com/user-attachments/assets/52e6f0e7-3846-4ed5-9ec9-088e69c70ea4" /></a>
+    <a href="https://github.com/user-attachments/assets/ca3cd8cc-754c-491d-810d-a43c8a149d41"><img width="220" alt="Screenshot 8" src="https://github.com/user-attachments/assets/ca3cd8cc-754c-491d-810d-a43c8a149d41" /></a>
+</p>
 
 ## Deliverables
 - Android app source code repository: [iosahil/TicTacToe](https://github.com/iosahil/TicTacToe)
@@ -180,6 +187,9 @@ Use refresh script for update-only flow:
 
 
 ## NOTE
-I initially integrated with the official Nakama Java SDK (`nakama-java`).
-During implementation, SDK-level integration issues were slowing delivery, so I switched to a direct REST + WebSocket client approach.
-That change gave predictable control over auth, RPC calls, and realtime op-code handling while keeping the backend fully server-authoritative.
+1. I initially integrated the official Nakama Java SDK (`nakama-java`).
+During implementation, SDK-level issues slowed delivery, so I switched to a direct REST + WebSocket client integration.
+This provided predictable control over authentication, RPC calls, and realtime op-code handling while keeping gameplay server-authoritative.
+2. I chose native Android development with Kotlin instead of cross-platform frameworks to optimize performance and align with my strongest development experience.
+3. I implemented Google Sign-In instead of name-based authentication to provide stronger identity guarantees and better long-term scalability.
+4. The app UX is intentionally designed to feel replayable and social, so it plays like a real product rather than a tutorial-style TicTacToe demo.
